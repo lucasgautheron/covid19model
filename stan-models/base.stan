@@ -15,6 +15,7 @@ data {
   int EpidemicStart[M];
   real pop[M];
   real SI[N2]; // fixed pre-calculated SI using emprical data from Neil
+  int lockdownDay[m];
 }
 
 parameters {
@@ -25,6 +26,7 @@ parameters {
   real<lower=0> phi;
   real<lower=0> tau;
   real <lower=0> ifr_noise[M];
+  real<lower=0> Rmin[M]; // Value of R after interventions
 }
 
 transformed parameters {
@@ -81,32 +83,59 @@ model {
   for(m in 1:M){
     deaths[EpidemicStart[m]:N[m], m] ~ neg_binomial_2(E_deaths[EpidemicStart[m]:N[m], m], phi);
    }
+  for (m in 1:M) {
+      Rmin[m] ~ normal(0.8, 0.1)
+  }
 }
 
 generated quantities {
+    // no intervention
     matrix[N2, M] prediction0 = rep_matrix(0,N2,M);
     matrix[N2, M] E_deaths0  = rep_matrix(0,N2,M);
-    
+
+    // fixed intervention effect
+    matrix[N2, M] prediction1 = rep_matrix(0,N2,M);
+    matrix[N2, M] E_deaths1  = rep_matrix(0,N2,M);
+
+    matrix[N2, M] Reff = rep_matrix(0,N2,M);
     {
+      for (m in 1:M){
+        for (i in 1:lockdownDay){
+          Reff[i,m] = mu[m];
+        }
+        for (i in lockdownDay+1:N2){
+          Reff[i,m] = Rmin[m];
+        }
+      }
       matrix[N2,M] cumm_sum0 = rep_matrix(0,N2,M);
+      matrix[N2,M] cumm_sum1 = rep_matrix(0,N2,M);
       for (m in 1:M){
          for (i in 2:N0){
           cumm_sum0[i,m] = cumm_sum0[i-1,m] + y[m]; 
+          cumm_sum1[i,m] = cumm_sum1[i-1,m] + y[m]; 
         }
         prediction0[1:N0,m] = rep_vector(y[m],N0); 
+        prediction1[1:N0,m] = rep_vector(y[m],N0); 
         for (i in (N0+1):N2) {
           real convolution0 = 0;
+          real convolution1 = 0;
           for(j in 1:(i-1)) {
             convolution0 += prediction0[j, m] * SI[i-j]; 
+            convolution1 += prediction1[j, m] * SI[i-j]; 
           }
           cumm_sum0[i,m] = cumm_sum0[i-1,m] + prediction0[i-1,m];
           prediction0[i, m] =  ((pop[m]-cumm_sum0[i,m]) / pop[m]) * mu[m] * convolution0;
+
+          cumm_sum1[i,m] = cumm_sum1[i-1,m] + prediction1[i-1,m];
+          prediction1[i, m] =  ((pop[m]-cumm_sum1[i,m]) / pop[m]) * Reff[i,m] * convolution1;
         }
         
         E_deaths0[1, m] = uniform_rng(1e-16, 1e-15);
+        E_deaths1[1, m] = uniform_rng(1e-16, 1e-15);
         for (i in 2:N2){
           for(j in 1:(i-1)){
             E_deaths0[i,m] += prediction0[j,m] * f[i-j,m] * ifr_noise[m];
+            E_deaths1[i,m] += prediction1[j,m] * f[i-j,m] * ifr_noise[m];
           }
         }
       }
