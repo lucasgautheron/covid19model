@@ -15,7 +15,7 @@ data {
   int EpidemicStart[M];
   real pop[M];
   real SI[N2]; // fixed pre-calculated SI using emprical data from Neil
-  int lockdownDay[m];
+  int lockdownDay[M];
 }
 
 parameters {
