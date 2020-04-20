@@ -202,7 +202,7 @@ for(Country in countries) {
   if(length(stan_data$N) == 1) {
     stan_data$N = as.array(stan_data$N)
   }
-  stan_data$lockdownDay=10
+  stan_data$lockdownDay=c(stan_data$lockdownDay, 10)
 }
 
 # create the `any intervention` covariate
@@ -252,7 +252,7 @@ print(sprintf("Jobid = %s",JOBID))
 
 save.image(paste0('results/',StanModel,'-',JOBID,'.Rdata'))
 
-save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,estimated.deaths.cf,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
+save(fit,prediction,dates,reported_cases,deaths_by_country,countries,estimated.deaths,estimated.deaths.cf,estimated.deaths.an,out,covariates,file=paste0('results/',StanModel,'-',JOBID,'-stanfit.Rdata'))
 
 library(bayesplot)
 filename <- paste0(StanModel,'-',JOBID)

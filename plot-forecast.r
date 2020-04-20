@@ -26,10 +26,16 @@ make_forecast_plot <- function(){
     N <- length(dates[[i]])
     N2 <- N + 7
     country <- countries[[i]]
+
+    if (country == "Italy") {
+        next
+    }
     
     predicted_cases <- colMeans(prediction[,1:N,i])
     predicted_cases_li <- colQuantiles(prediction[,1:N,i], probs=.025)
     predicted_cases_ui <- colQuantiles(prediction[,1:N,i], probs=.975)
+
+    print(country)
     
     estimated_deaths <- colMeans(estimated.deaths[,1:N,i])
     estimated_deaths_li <- colQuantiles(estimated.deaths[,1:N,i], probs=.025)
@@ -38,6 +44,10 @@ make_forecast_plot <- function(){
     estimated_deaths_forecast <- colMeans(estimated.deaths[,1:N2,i])[N:N2]
     estimated_deaths_li_forecast <- colQuantiles(estimated.deaths[,1:N2,i], probs=.025)[N:N2]
     estimated_deaths_ui_forecast <- colQuantiles(estimated.deaths[,1:N2,i], probs=.975)[N:N2]
+
+    estimated_deaths_an <- colMeans(estimated.deaths.an[,1:N,i])
+    estimated_deaths_li_an <- colQuantiles(estimated.deaths.an[,1:N,i], probs=.025)
+    estimated_deaths_ui_an <- colQuantiles(estimated.deaths.an[,1:N,i], probs=.975)
     
     rt <- colMeans(out$Rt_adj[,1:N,i])
     rt_li <- colQuantiles(out$Rt_adj[,1:N,i],probs=.025)
@@ -59,6 +69,9 @@ make_forecast_plot <- function(){
                                "estimated_deaths_c" =  cumsum(estimated_deaths),
                                "death_min_c" = cumsum(estimated_deaths_li),
                                "death_max_c"= cumsum(estimated_deaths_ui),
+                               "estimated_deaths_an_c" =  cumsum(estimated_deaths_an),
+                               "death_min_an_c" = cumsum(estimated_deaths_li_an),
+                               "death_max_an_c"= cumsum(estimated_deaths_ui_an),
                                "estimated_deaths" = estimated_deaths,
                                "death_min" = estimated_deaths_li,
                                "death_max"= estimated_deaths_ui,
@@ -67,6 +80,7 @@ make_forecast_plot <- function(){
                                "rt_max" = rt_ui)
     
     times <- as_date(as.character(dates[[i]]))
+    write.csv(data_country, paste0("deaths_", country, ".csv"))
     times_forecast <- times[length(times)] + 0:7
     data_country_forecast <- data.frame("time" = times_forecast,
                                         "country" = rep(country, 8),

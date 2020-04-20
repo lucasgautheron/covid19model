@@ -98,17 +98,20 @@ generated quantities {
     matrix[N2, M] E_deaths1  = rep_matrix(0,N2,M);
 
     matrix[N2, M] Reff = rep_matrix(0,N2,M);
+
     {
+      matrix[N2,M] cumm_sum0 = rep_matrix(0,N2,M);
+      matrix[N2,M] cumm_sum1 = rep_matrix(0,N2,M);
+
       for (m in 1:M){
-        for (i in 1:lockdownDay){
+        for (i in 1:lockdownDay[m]){
           Reff[i,m] = mu[m];
         }
-        for (i in lockdownDay+1:N2){
+        for (i in lockdownDay[m]+1:N2){
           Reff[i,m] = Rmin[m];
         }
       }
-      matrix[N2,M] cumm_sum0 = rep_matrix(0,N2,M);
-      matrix[N2,M] cumm_sum1 = rep_matrix(0,N2,M);
+
       for (m in 1:M){
          for (i in 2:N0){
           cumm_sum0[i,m] = cumm_sum0[i-1,m] + y[m]; 
