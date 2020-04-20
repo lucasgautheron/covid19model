@@ -52,6 +52,8 @@ make_forecast_plot <- function(){
     rt <- colMeans(out$Rt_adj[,1:N,i])
     rt_li <- colQuantiles(out$Rt_adj[,1:N,i],probs=.025)
     rt_ui <- colQuantiles(out$Rt_adj[,1:N,i],probs=.975)
+
+    write.csv(out$Rt_adj[,N,i], paste0("Rt_posterior_", country, ".csv"))
     
     data_country <- data.frame("time" = as_date(as.character(dates[[i]])),
                                "country" = rep(country, length(dates[[i]])),
