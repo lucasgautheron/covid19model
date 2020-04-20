@@ -23,7 +23,7 @@ error = function(e) {
 })
 
 
-d <- read.csv("data/COVID-19-up-to-date.csv", stringsAsFactors = FALSE)
+d <- read.csv("data/COVID-19-up-to-date-fixed.csv", stringsAsFactors = FALSE)
 d$t <- lubridate::decimal_date(as.Date(d$dateRep, format = "%d/%m/%Y"))
 d <- d[order(d$'countriesAndTerritories', d$t, decreasing = FALSE), ]
 names(d)[names(d) == "countriesAndTerritories"] <- "Countries.and.territories"
