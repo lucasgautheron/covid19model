@@ -243,6 +243,7 @@ out = rstan::extract(fit)
 prediction = out$prediction
 estimated.deaths = out$E_deaths
 estimated.deaths.cf = out$E_deaths0
+estimated.deaths.an = out$E_deaths1
 
 JOBID = Sys.getenv("PBS_JOBID")
 if(JOBID == "")
