@@ -84,7 +84,7 @@ model {
     deaths[EpidemicStart[m]:N[m], m] ~ neg_binomial_2(E_deaths[EpidemicStart[m]:N[m], m], phi);
    }
   for (m in 1:M) {
-      Rmin[m] ~ laplace(0.68, 0.06); # fitted to Rt posterior
+      Rmin[m] ~ logistic(0.68, 0.05); // fitted to Rt posterior
   }
 }
 

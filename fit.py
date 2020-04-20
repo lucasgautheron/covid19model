@@ -4,7 +4,7 @@ import pandas as pd
 import sys
 
 data = pd.Series(pd.read_csv(sys.argv[1])["x"].ravel())
-print(data)
+#print(data)
 
 import warnings
 import numpy as np
@@ -39,7 +39,7 @@ def best_fit_distribution(data, bins=200, ax=None):
     ]
 
     DISTRIBUTIONS = [
-        st.norm, st.gamma, st.laplace
+        st.norm, st.gamma,  st.logistic
     ]
 
     # Best holders
@@ -118,6 +118,8 @@ dataYLim = ax.get_ylim()
 # Find best fit distribution
 best_fit_name, best_fit_params = best_fit_distribution(data, 200, ax)
 best_dist = getattr(st, best_fit_name)
+
+print(best_fit_name, best_fit_params)
 
 # Update plots
 ax.set_ylim(dataYLim)
