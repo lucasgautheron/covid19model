@@ -2,6 +2,7 @@ set terminal svg font 'Geomanist, 16'
 set out 'deaths.svg'
 
 set xlabel 'Date'
+set ylabel 'Décès cumulés'
 
 set xdata time
 set timefmt "%Y-%m-%d"
