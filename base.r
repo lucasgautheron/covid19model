@@ -202,7 +202,7 @@ for(Country in countries) {
   if(length(stan_data$N) == 1) {
     stan_data$N = as.array(stan_data$N)
   }
-  lockdown = which(dates[[Country]] == "2020-03-10")
+  lockdown = which(dates[[Country]] == "2020-03-13")
   stan_data$lockdownDay=c(stan_data$lockdownDay, lockdown)
 }
 
